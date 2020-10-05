@@ -13,6 +13,9 @@ class Graph{
 		void DFS(int s);
 		void DFSUtil(int s, vector<bool> &v);
 		void DFS_stronglyConnected(int root);
+		void DFS_iterative(int root);
+		Graph transpose();
+		void printGraph();
 };
 
 Graph::Graph(int V){
@@ -28,10 +31,7 @@ void Graph::addEdge(int u, int v)
 //this one works only when all nodes are reachable from first node
 void Graph::BFS_stronglyConnected(int s)
 {
-	vector<bool> visited(V);
-	for(int i=0;i<V;i++)
-		visited[i]=false;
-	
+	vector<bool> visited(V, false);
 	list<int> q;
 	
 	visited[s]=true;
@@ -58,9 +58,7 @@ void Graph::BFS_stronglyConnected(int s)
 
 void Graph::BFS(int s)
 {
-	vector<bool> visited(V);
-	for(int i=0;i<V;i++)
-		visited[i]=false;
+	vector<bool> visited(V, false);
 	BFSUtil(s, visited);
 	//return;
 	for(int i=0;i<V;i++)
@@ -97,9 +95,7 @@ void Graph::BFSUtil(int s, vector<bool> &visited)
 
 void Graph::DFS_stronglyConnected(int root)
 {
-	vector<bool> visited(V);
-	for(int i=0;i<V;i++)
-		visited[i]=false;
+	vector<bool> visited(V, false);
 	DFSUtil(root, visited);
 	cout<<endl;
 }
@@ -121,9 +117,7 @@ void Graph::DFSUtil(int root, vector<bool> &visited)
 
 void Graph::DFS(int root)
 {
-	vector<bool> visited(V);
-	for(int i=0;i<V;i++)
-		visited[i]=false;
+	vector<bool> visited(V, false);
 	DFSUtil(root, visited);
 	cout<<endl;
 	for(int i=0;i<V;i++)
@@ -136,6 +130,55 @@ void Graph::DFS(int root)
 	}	
 }
 
+void Graph::DFS_iterative(int root)
+{
+	vector<bool> visited(V, false);
+	stack<int> st;
+	st.push(root);
+	visited[root]=true;
+	while(!st.empty())
+	{
+		root=st.top();
+		st.pop();
+		cout<<root<<" ";
+		for(list<int>::reverse_iterator it=adj[root].rbegin();it!=adj[root].rend();it++)
+		{
+			if(!visited[*it])
+			{
+				st.push(*it);
+				visited[*it]=true;
+			}
+		}
+	}
+	cout<<endl;
+}
+
+Graph Graph::transpose()
+{
+	Graph g(V);
+	for(int i=0;i<V;i++)
+	{
+		for(list<int>::iterator it=adj[i].begin();it!=adj[i].end();it++)
+		{
+			g.addEdge(*it, i);
+		}
+	}
+	return g;
+}
+
+void Graph::printGraph()
+{
+	for(int i=0;i<V;i++)
+	{
+		cout<<i<<" -> ";
+		for(list<int>::iterator it=adj[i].begin();it!=adj[i].end();it++)
+		{
+			cout<<*it<<" ";
+		}
+		cout<<endl;
+	}
+}
+
 int main()
 {
 	Graph g(6); 
@@ -143,11 +186,15 @@ int main()
     g.addEdge(0, 2); 
     g.addEdge(1, 2); 
     g.addEdge(2, 0); 
-    g.addEdge(2, 3); 
+    g.addEdge(2, 3);
     g.addEdge(3, 3); 
     g.addEdge(4, 5);
 	//g.BFS(2);
     //g.BFS_stronglyConnected(2);
     g.DFS_stronglyConnected(2);
+    g.DFS_iterative(2);
+    g.printGraph();
+    g=g.transpose();
+    g.printGraph();
 	return 0;
 }
