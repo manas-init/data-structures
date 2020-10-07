@@ -16,6 +16,7 @@ class Graph{
 		void DFS_iterative(int root);
 		Graph transpose();
 		void printGraph();
+		int minEdgesBetweenVertices(int u, int v);
 };
 
 Graph::Graph(int V){
@@ -179,6 +180,31 @@ void Graph::printGraph()
 	}
 }
 
+int Graph::midEdgesBetweenVertices(int u, int v)
+{
+	vector<bool> visited(V, false);
+	vector<int> distance(V, 0);
+	list<int> q;
+	q.push_back(u);
+	visited[u]=true;
+	while(q.size()!=0)
+	{
+		int curr=q.front();
+		q.pop_front();
+		for(list<int>::iterator it=adj[curr].begin();it!=adj[curr].end();it++)
+		{
+			if(!visited[*it])
+			{
+				q.push_back(*it);
+				visited[*it]=true;
+				distance[*it]=distance[curr]+1;
+			}
+		}
+	}
+	return distance[v];
+}
+
+
 int main()
 {
 	Graph g(6); 
@@ -196,5 +222,6 @@ int main()
     g.printGraph();
     g=g.transpose();
     g.printGraph();
+    cout<<g.minEdgesBetweenVertices(0, 2);
 	return 0;
 }
