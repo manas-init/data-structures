@@ -10,9 +10,10 @@ class Graph{
 		void printGraph();
 		void topoSortDFS();
 		void topoSortDFSUtil(int curr, vector<bool> &visited, stack<int> &stk);
-		void topoSortKahn();
+		vector<int> topoSortKahn();
 		void topoSortAll();
 		void topoSortAllUtil(vector<int> res, vector<bool> &v, vector<int> in_degree);
+		int longestPath();
 };
 
 Graph::Graph(int V)
@@ -68,7 +69,7 @@ void Graph::topoSortDFSUtil(int curr, vector<bool> &visited, stack<int> &stk)
 	stk.push(curr);
 }
 
-void Graph::topoSortKahn()
+vector<int> Graph::topoSortKahn()
 {
 	vector<int> in_degree(V, 0);
 	//O(V+E)
@@ -104,12 +105,13 @@ void Graph::topoSortKahn()
 	if(visited_count!=V)
 	{
 		cout<<"Given graph contains cycle\nTopological sorting is not possible for this\n";
-		return;
+		return top_order;
 	}
 	cout<<"Topological sorted order : ";
 	for(int i=0;i<V;i++)
 		cout<<top_order[i]<<" ";
 	cout<<endl;
+	return top_order;
 }
 
 void Graph::topoSortAll()
@@ -153,6 +155,26 @@ void Graph::topoSortAllUtil(vector<int> sort, vector<bool> &visited, vector<int>
 	}
 }
 
+int Graph::longestPath()
+{
+	vector<int> topo_order=topoSortKahn();
+	vector<int> dist(V, 0);
+	for(int i=0;i<V;i++)
+	{
+		for(list<int>::iterator it=adj[i].begin();it!=adj[i].end();it++)
+		{
+			if(dist[*it]<dist[i]+1)//if dist of adjacent vertex is less than dist of parent + weight from parent to adhjacent vertex
+				dist[*it]=dist[i]+1;
+		}
+	}
+	int max=INT_MIN;
+	for(int i=0;i<V;i++)
+		if(dist[i]>max)
+			max=dist[i];
+	cout<<max<<endl;
+	return max;
+}
+
 int main()
 {
 	Graph g(6);
@@ -175,4 +197,5 @@ int main()
     g.addEdge(2, 3); 
     g.addEdge(3, 1); 
     g.topoSortAll();*/
+    g.longestPath();
 }
